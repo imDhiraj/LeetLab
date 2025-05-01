@@ -56,15 +56,16 @@ export const authMiddleware =async(req,res, next)=>{
 
 export const checkAdmin = async (req , res, next )=>{
     try {
-        const userId = req.user.findUnique({
-            where:{
-                id:userId
-            },
-            select:{
-                role:true
-            }
+         const userId = req.user.id;
 
-        })
+         const user = await db.user.findUnique({
+           where: {
+             id: userId,
+           },
+           select: {
+             role: true,
+           },
+         });
 
         if (!user || user.role !== "ADMIN"){
             return res.status(403).json({

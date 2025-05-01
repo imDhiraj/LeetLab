@@ -1,5 +1,6 @@
 import{db} from "../libs/db.js"
 import { pollBatchResults, submitBatch } from "../libs/judge0.lib.js";
+import { getJudge0LanguageId } from "../libs/judge0.lib.js";
 
 
 
@@ -29,23 +30,22 @@ export const createProblem = async(req,res)=>{
         if(!languageId){
           return res.status(400).json({error:`Language ${language}is not supported`})
         }
-        const submission = testcases.map((input ,output)=>({
-          source_code:solutionCode,
-          language_id:languageId,
-          stdin:input,
-          expected_output:output,
-
-
-        }))
-
-        const submissionResults = await submitBatch(submissions)
+        const submission = testcases.map(({ input, output }) => ({
+          source_code: solutionCode,
+          language_id: languageId,
+          stdin: input,
+          expected_output: output,
+        }));
+        console.log("Submissions:", submission);
+        const submissionResults = await submitBatch(submission);
 
         const token = submissionResults.map((res)=>res.token);
 
-        const result = await pollBatchResults(token);
-
-        for(let i = 0 ; i<result.length;i++){
-          const result= result[i];
+        const results = await pollBatchResults(token);
+        console.log("results",results);
+        for(let i = 0 ; i<results.length;i++){
+          const result= results[i];
+          console.log("Results--------",result);
           if (result.status.id!==3){
             return res.status(400).json({
               error:`Testcase  ${i+1} failed for language ${language}`
@@ -68,10 +68,10 @@ export const createProblem = async(req,res)=>{
           },
         });
         return res.status(200).json({
-          sucess:true,
-          message:"New Problem Created Sucessfully",
-          newProblem:newProblem,
-        })
+          sucess: true,
+          message: "New Problem Created Sucessfully",
+          newProblem: newProblem,
+        });
 
       }
          
@@ -85,6 +85,7 @@ export const createProblem = async(req,res)=>{
 
 
 export const getAllProblems = async (req, res) => {
+  
     try {
         
 
@@ -99,6 +100,8 @@ export const getAllProblems = async (req, res) => {
 
 
 export const getProblemById = async (req, res) => {
+
+  
     try {
 
     } catch (error) {
