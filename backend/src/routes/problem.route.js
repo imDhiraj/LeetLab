@@ -12,7 +12,7 @@ problemRoutes.get("/getProblem/:id", authMiddleware, getProblemById );
 problemRoutes.put("/update-problem/:id", authMiddleware, checkAdmin, updateProblemById);
 problemRoutes.delete("/deleteProblem/:id", authMiddleware, checkAdmin, deleteProblem);
 
-problemRoutes.get("/get-solved-problem", authMiddleware, checkAdmin, getProblemsSovledByUser);
+problemRoutes.get("/get-solved-problem", authMiddleware,  getProblemsSovledByUser);
 
 
 

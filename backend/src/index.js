@@ -24,6 +24,7 @@ app.use("/api/v1/auth",authRoutes)
 app.use("/api/v1/problems",problemRoutes)
 app.use('/api/v1/excute-code',excutionRoute)
 app.use("/api/v1/submission", submissionRoutes);
+//app.use("/api/v1/playlist",problemPlaylist)
 
 app.listen(port,()=>{
     console.log("Server is listening to" ,port);
