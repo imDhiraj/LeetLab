@@ -2,15 +2,15 @@ import { db } from "../libs/db.js";
 
 export const createPlaylist = async (req, res) => {
   try {
-    const {name , desciption}= req.body;
+    const { name, description } = req.body;
     const userId = req.user.id;
-    const playlist= await db.playlist.create({
-        data:{
-            name ,
-            desciption,
-            userId
-        }
-    })
+    const playlist = await db.playlist.create({
+      data: {
+        name,
+        description,
+        userId,
+      },
+    });
 
 
     res.status(201).json({
@@ -89,7 +89,7 @@ export const getPlayListDetsils = async (req, res) => {
 export const addProblemToPlaylist = async (req, res) => {
 
     const { playlistId } = req.params;
-    const { playlistIds } = req.body;
+    const { problemIds } = req.body;
   try {
     if(!Array.isArray(problemIds) || problemIds.length===0){
         res.status(400).json({error:"Invaild or missing ProblemId"})
@@ -97,11 +97,11 @@ export const addProblemToPlaylist = async (req, res) => {
     }
     //create recored for problem in playlist
 
-    const problemsInPlaylist = await db.problemsInPlaylist.createMany({
-        data:problemIds.map((problemId)=>{
-            playlistId,
+    const problemsInPlaylist = await db.problemInPlaylist.createMany({
+        data:problemIds.map((problemId)=>({
+            playListId:playlistId  ,
             problemId
-        })
+        }))
     })
    
 
@@ -130,7 +130,7 @@ export const deletePlayList = async (req, res) => {
     res.status(200).json({
       success: true,
       message: "playlist deleted Sucuccessfully",
-      deletePlayList,
+      deletedPlayList,
     });
   } catch (error) {
     console.error("playlist deleted Error:", error);
@@ -139,29 +139,32 @@ export const deletePlayList = async (req, res) => {
 };
 export const removeProblemFromPlayList = async (req, res) => {
     const { playlistId } = req.params;
-    const { problemIds } = req.params;
+    const { problemIds } = req.body;
     
     try {
         if(!Array.isArray(problemIds) || problemIds.length===0){
-            res.status(400).json({error:"Invaild or missing ProblemId"})
+            res.status(400).json({error:"Invaild or missing ProblemId"})}
 
         
 
 
 
-      const deletedProblem = await db.problemsInPlaylist.delete({
+      const deletedProblem = await db.problemInPlaylist.deleteMany({
         where: {
-           playlistId,
-           problemIds:{
+            playListId: playlistId,
+           problemId:{
             in:problemIds
+           
            }
         },
       })
       res.status(200).json({
         success: true,
         message: "Subimissions Fetched Sucuccessfully",
+        deletedProblem
       });
-    } }catch (error) {
+    } 
+    catch (error) {
       console.error("Fetching Submission Error:", error);
       res.status(500).json({ error: "Failed to fetch subimission" });
     }
