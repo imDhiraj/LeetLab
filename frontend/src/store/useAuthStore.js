@@ -1,7 +1,7 @@
 import {create} from "zustand"
 import { axiosInstance } from "../lib/axios.js";
 import toast from "react-hot-toast"
-import axios from "axios"
+// import axios from "axios"
 
 
 
@@ -31,8 +31,8 @@ export const useAuthStore = create ((set)=>({
         set({ isSigninUp: true });
         try {
           
-          const res = await axios.post("http://localhost:4000/api/v1/auth/register", data);
-         // const res = await axiosInstance.post("/auth/register", data);
+          //const res = await axios.post("http://localhost:4000/api/v1/auth/register", data);
+           const res = await axiosInstance.post("/auth/register", data);
     
           set({ authUser: res.data.user });
     
@@ -48,11 +48,9 @@ export const useAuthStore = create ((set)=>({
       login: async (data) => {
         set({ isLoggingIn: true });
         try {
-          const res = await axios.post(
-            "http://localhost:4000/api/v1/auth/login",
-            data
-          );
-          ;
+         // const res = await axios.post("http://localhost:4000/api/v1/auth/login", data );
+          const res = await axiosInstance.post("/auth/login", data);
+          
     
           set({ authUser: res.data.user });
     
@@ -67,7 +65,8 @@ export const useAuthStore = create ((set)=>({
     
       logout: async () => {
         try {
-          await axios.post("http://localhost:4000/api/v1/auth/logout");
+          //await axios.post("http://localhost:4000/api/v1/auth/logout");
+          await axiosInstance.post("/auth/logout");
     
           set({ authUser: null });
     
