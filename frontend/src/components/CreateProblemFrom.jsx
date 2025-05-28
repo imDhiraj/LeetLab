@@ -17,7 +17,7 @@ import Editor from "@monaco-editor/react"
 import { useState } from 'react'
 import { axiosInstance } from '../lib/axios'
 import toast from 'react-hot-toast'
-import { replace, useNavigate } from 'react-router-dom'
+import {  useNavigate } from 'react-router-dom'
 
 
 const problemSchema = z.object({
@@ -36,7 +36,7 @@ const problemSchema = z.object({
       })
     )
     .min(1, "At least one test case is required"),
-  examples: z.object({
+  example: z.object({
     JAVASCRIPT: z.object({
       input: z.string().min(1, "Input is required"),
       output: z.string().min(1, "Output is required"),
@@ -58,7 +58,7 @@ const problemSchema = z.object({
     PYTHON: z.string().min(1, "Python code snippet is required"),
     JAVA: z.string().min(1, "Java solution is required"),
   }),
-  referenceSolutions: z.object({
+  referenceSoloution: z.object({
     JAVASCRIPT: z.string().min(1, "JavaScript solution is required"),
     PYTHON: z.string().min(1, "Python solution is required"),
     JAVA: z.string().min(1, "Java solution is required"),
@@ -91,7 +91,7 @@ const sampledpData = {
       output: "5",
     },
   ],
-  examples: {
+  example: {
     JAVASCRIPT: {
       input: "n = 2",
       output: "2",
@@ -174,7 +174,7 @@ const sampledpData = {
     }
   }`,
   },
-  referenceSolutions: {
+  referenceSoloution: {
     JAVASCRIPT: `/**
   * @param {number} n
   * @return {number}
@@ -338,7 +338,7 @@ const sampleStringProblem = {
       output: "true",
     },
   ],
-  examples: {
+  example: {
     JAVASCRIPT: {
       input: 's = "A man, a plan, a canal: Panama"',
       output: "true",
@@ -419,7 +419,7 @@ const sampleStringProblem = {
   }
   `,
   },
-  referenceSolutions: {
+  referenceSoloution: {
     JAVASCRIPT: `/**
      * @param {string} s
      * @return {boolean}
@@ -527,7 +527,7 @@ const CreateProblemFrom = () => {
       defaultValues: {
         testcases: [{ input: "", output: "" }],
         tags: [""],
-        examples: {
+        example: {
           JAVASCRIPT: { input: "", output: "", explanation: "" },
           PYTHON: { input: "", output: "", explanation: "" },
           JAVA: { input: "", output: "", explanation: "" },
@@ -537,7 +537,7 @@ const CreateProblemFrom = () => {
           PYTHON: "def solution():\n    # Write your code here\n    pass",
           JAVA: "public class Solution {\n    public static void main(String[] args) {\n        // Write your code here\n    }\n}",
         },
-        referenceSolutions: {
+        referenceSoloution: {
           JAVASCRIPT: "// Add your reference solution here",
           PYTHON: "# Add your reference solution here",
           JAVA: "// Add your reference solution here",
@@ -569,7 +569,23 @@ const CreateProblemFrom = () => {
     const [isLoading, setIsLoading]=useState(false);
 
     const onSubmit = async(value)=>{
-        console.log(value)
+        try {
+            setIsLoading(true)
+            const res = await axiosInstance.post(
+              "/problems/createProblem",
+              value
+            );
+            console.log(res.data)
+            toast.success(res.data.message||"problem Created SucuessFully")
+            navigation("/")
+        } catch (error) {
+            console.log(error)
+            toast.error("Error creating Problem")
+        }finally{
+            setIsLoading(false)
+
+        }
+
     }
 
     const loadSampleData=()=>{
@@ -880,7 +896,7 @@ const CreateProblemFrom = () => {
                         </h4>
                         <div className="border rounded-md overflow-hidden">
                           <Controller
-                            name={`referenceSolutions.${language}`}
+                            name={`referenceSoloution.${language}`}
                             control={control}
                             render={({ field }) => (
                               <Editor
@@ -901,17 +917,17 @@ const CreateProblemFrom = () => {
                             )}
                           />
                         </div>
-                        {errors.referenceSolutions?.[language] && (
+                        {errors.referenceSoloution?.[language] && (
                           <div className="mt-2">
                             <span className="text-error text-sm">
-                              {errors.referenceSolutions[language].message}
+                              {errors.referenceSoloution[language].message}
                             </span>
                           </div>
                         )}
                       </div>
                     </div>
 
-                    {/* Examples */}
+                    {/* example */}
                     <div className="card bg-base-100 shadow-md">
                       <div className="card-body p-4 md:p-6">
                         <h4 className="font-semibold text-base md:text-lg mb-4">
@@ -926,13 +942,13 @@ const CreateProblemFrom = () => {
                             </label>
                             <textarea
                               className="textarea textarea-bordered min-h-20 w-full p-3 resize-y"
-                              {...register(`examples.${language}.input`)}
+                              {...register(`example.${language}.input`)}
                               placeholder="Example input"
                             />
-                            {errors.examples?.[language]?.input && (
+                            {errors.example?.[language]?.input && (
                               <label className="label">
                                 <span className="label-text-alt text-error">
-                                  {errors.examples[language].input.message}
+                                  {errors.example[language].input.message}
                                 </span>
                               </label>
                             )}
@@ -945,13 +961,13 @@ const CreateProblemFrom = () => {
                             </label>
                             <textarea
                               className="textarea textarea-bordered min-h-20 w-full p-3 resize-y"
-                              {...register(`examples.${language}.output`)}
+                              {...register(`example.${language}.output`)}
                               placeholder="Example output"
                             />
-                            {errors.examples?.[language]?.output && (
+                            {errors.example?.[language]?.output && (
                               <label className="label">
                                 <span className="label-text-alt text-error">
-                                  {errors.examples[language].output.message}
+                                  {errors.example[language].output.message}
                                 </span>
                               </label>
                             )}
@@ -964,7 +980,7 @@ const CreateProblemFrom = () => {
                             </label>
                             <textarea
                               className="textarea textarea-bordered min-h-24 w-full p-3 resize-y"
-                              {...register(`examples.${language}.explanation`)}
+                              {...register(`example.${language}.explanation`)}
                               placeholder="Explain the example"
                             />
                           </div>
