@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { Code, Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { z } from "zod";
 import AuthImagePattern from "../components/AuthImagePattern";
+import { useAuthStore } from "../store/useAuthStore";
 
 const LoginSchema = z.object({
   email: z.string().email("Enter a vaild Email"),
@@ -15,6 +16,7 @@ const LoginSchema = z.object({
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const { login, isLoggingIn } = useAuthStore();
   const {
     register,
     handleSubmit,
@@ -22,7 +24,12 @@ const LoginPage = () => {
   } = useForm({ resolver: zodResolver(LoginSchema) });
 
   const onSubmit = async (data) => {
-    console.log(data);
+    try {
+      await login(data);
+      console.log("Login Data", data);
+    } catch (error) {
+      console.error("Login failed :", error);
+    }
   };
 
   return (
@@ -42,8 +49,6 @@ const LoginPage = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        
-
             {/* Email */}
             <div className="form-control">
               <label className="label">
@@ -109,17 +114,16 @@ const LoginPage = () => {
             <button
               type="submit"
               className="btn btn-primary w-full"
-
-              //   disabled={isSigninUp}
+              disabled={isLoggingIn}
             >
-              {/* {isSigninUp ? (
+              {isLoggingIn ? (
                 <>
                   <Loader2 className="h-5 w-5 animate-spin" />
                   Loading...
                 </>
               ) : (
-                "Sign in"
-              )} */}
+                "Login"
+              )}
             </button>
           </form>
 

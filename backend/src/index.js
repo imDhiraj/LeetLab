@@ -1,6 +1,7 @@
 import express from'express';
 import dotenv from 'dotenv';
 import cookiePasser from 'cookie-parser';
+import cors from "cors"
 
 import authRoutes from './routes/auth.routes.js';
 import problemRoutes from './routes/problem.route.js';
@@ -15,6 +16,12 @@ const app = express();
 
 app.use(express.json());
 app.use(cookiePasser());
+app.use(
+  cors({
+    origin:"*",
+    credentials: true,
+  })
+);
 
 
 app.get('/',(req ,res)=>{
@@ -29,4 +36,4 @@ app.use("/api/v1/playlist", playListRoutes)
 
 app.listen(port,()=>{
     console.log("Server is listening to" ,port);
-})
+})  
