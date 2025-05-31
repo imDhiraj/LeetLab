@@ -86,7 +86,16 @@ export const createProblem = async(req,res)=>{
 
 export const getAllProblems = async (req, res) => {
     try {
-      const problems = await db.problem.findMany();
+      const problems = await db.problem.findMany(
+        {include: {
+          solvedBy: {
+            where: {
+              userId: req.user.id
+            }
+          }
+        }}
+      );
+      
       if(!problems){
         res.status(404).json({
           error:"No Problem Found"
@@ -122,12 +131,12 @@ export const getProblemById = async (req, res) => {
         }
       )
       if (!problem) {
-        res.status(404).json({
+       return res.status(404).json({
           error: "No Problem Found",
         });
       }
 
-      res.status(200).json({
+     return res.status(200).json({
         sucess: true,
         message: "Problem Fetched Successfully",
         problem,
@@ -137,7 +146,7 @@ export const getProblemById = async (req, res) => {
 
     } catch (error) {
         console.error("Error Getting Problem:", error);
-        res.status(500).json({
+       return res.status(500).json({
           error: "Error Getting Problem",
         });
     }
