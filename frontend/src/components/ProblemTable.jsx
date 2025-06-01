@@ -50,9 +50,9 @@ const ProblemTable = ({problems}) => {
 
     const difficulties = ["EASY", "MEDIUM", "HARD"]
 
-    const handleDelete = (id)=>{}
+    const handleDelete = ()=>{}
 
-    const handleAddToPlaylist =(id)=>{}
+    const handleAddToPlaylist =()=>{}
 
   return (
     <div className="w-full max-w-6xl mx-auto mt-10">
@@ -179,7 +179,7 @@ const ProblemTable = ({problems}) => {
                         )}
                         <button
                           className="btn btn-sm btn-outline flex gap-2 items-center"
-                          onClick={() => handleAddToPlaylist(problem.id)}
+                           onClick={() => handleAddToPlaylist(problem.id)}
                         >
                           <Bookmark className="w-4 h-4" />
                           <span className="hidden sm:inline">

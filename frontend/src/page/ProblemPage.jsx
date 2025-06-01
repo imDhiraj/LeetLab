@@ -21,11 +21,14 @@ import{ Play,
 import { useExecutionStore } from '../store/useExecutionStore';
 import { getLanguageId } from '../lib/lang';
 import SubmissionResults from '../components/Submission';
+import { useSubmissionStore } from '../store/useSubmissionStore';
 
 const ProblemPage = () => {
 
     const {id} =useParams()
     const {getProblemById,problem,isProblemLoading}=useProblemStore()
+    const { submission: submissions, isLoading: isSubmissionsLoading , getSubmissionForProblem, getSubmissionCountForProblem, submissionCount } =
+      useSubmissionStore();
     const [code , setCode ]=useState("")
     const [activeTab , setActiveTab]=useState("description");
     const [selectedLanguage , setSelectedLanguage]=useState("javascript")
@@ -36,7 +39,7 @@ const ProblemPage = () => {
 
 
 
-    const submissionCount =10
+   
 
     const handleRunCode = (e) => {
       e.preventDefault();
@@ -51,10 +54,16 @@ const ProblemPage = () => {
     };
 
    
+    useEffect(() => {
+      getProblemById(id);
+      getSubmissionCountForProblem(id);
+    }, [id]);
 
-    useEffect(()=>{
-        getProblemById(id)
-    },[id])
+    useEffect(() => {
+      if (activeTab === "submissions" && id) {
+        getSubmissionForProblem(id);
+      }
+    }, [activeTab, id]);
 
     useEffect(()=>{
       if(problem){
@@ -74,6 +83,22 @@ const ProblemPage = () => {
       setSelectedLanguage(lang)
       setCode(problem.codeSnippets?.[lang]||"")
     }
+    console.log("Problem:", problem);
+    console.log("isProblemLoading:", isProblemLoading);
+    
+
+    if (isProblemLoading || !problem) {
+      return (
+        <div className="flex items-center justify-center h-screen bg-base-200">
+          <div className="card bg-base-100 p-8 shadow-xl">
+            <span className="loading loading-spinner loading-lg text-primary"></span>
+            <p className="mt-4 text-base-content/70">Loading problem...</p>
+          </div>
+        </div>
+      );
+    }
+    console.log("Problem:", problem);
+    console.log("isProblemLoading:", isProblemLoading);
 
     const renderTabContent = () => {
       switch (activeTab) {
@@ -202,9 +227,9 @@ const ProblemPage = () => {
         <div className="flex-none gap-4">
           <button
             className={`btn btn-ghost btn-circle ${
-              isBookmarked ? "text-primary" : ""
+              isBookMarked ? "text-primary" : ""
             }`}
-            onClick={() => setIsBookmarked(!isBookmarked)}
+            onClick={() => setIsBookMarked(!isBookMarked)}
           >
             <Bookmark className="w-5 h-5" />
           </button>
@@ -319,37 +344,36 @@ const ProblemPage = () => {
         </div>
       </div>
       <div className="card bg-base-100 shadow-xl mt-6">
-          <div className="card-body">
-            {submission ? (
-              <SubmissionResults submission={submission} />
-            ) : (
-              <>
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-bold">Test Cases</h3>
-                </div>
-                <div className="overflow-x-auto">
-                  <table className="table table-zebra w-full">
-                    <thead>
-                      <tr>
-                        <th>Input</th>
-                        <th>Expected Output</th>
+        <div className="card-body">
+          {submission ? (
+            <SubmissionResults submission={submission} />
+          ) : (
+            <>
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-bold">Test Cases</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="table table-zebra w-full">
+                  <thead>
+                    <tr>
+                      <th>Input</th>
+                      <th>Expected Output</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {testCases.map((testCase, index) => (
+                      <tr key={index}>
+                        <td className="font-mono">{testCase.input}</td>
+                        <td className="font-mono">{testCase.output}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {testCases.map((testCase, index) => (
-                        <tr key={index}>
-                          <td className="font-mono">{testCase.input}</td>
-                          <td className="font-mono">{testCase.output}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </>
-            )}
-          </div>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
         </div>
-      
+      </div>
     </div>
   );
 }
