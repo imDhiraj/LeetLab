@@ -23,17 +23,19 @@ import { useExecutionStore } from "../store/useExecutionStore";
 import { getLanguageId } from "../lib/lang";
 import SubmissionResults from "../components/Submission";
 import { useSubmissionStore } from "../store/useSubmissionStore";
+import  SubmissionsList  from "../components/SubmissionList";
 
 const ProblemPage = () => {
   const { id } = useParams();
   const { getProblemById, problem, isProblemLoading } = useProblemStore();
   const {
-    submission: submissions,
+    submissions: submissions,
     isLoading: isSubmissionsLoading,
     getSubmissionForProblem,
     getSubmissionCountForProblem,
     submissionCount,
   } = useSubmissionStore();
+ 
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
@@ -45,6 +47,7 @@ const ProblemPage = () => {
   const handleRunCode = (e) => {
     e.preventDefault();
     try {
+      console.log("submit")
       const language_id = getLanguageId(selectedLanguage);
       const stdin = problem.testcases.map((tc) => tc.input);
       const expected_outputs = problem.testcases.map((tc) => tc.output);
@@ -99,7 +102,7 @@ const ProblemPage = () => {
   }
   console.log("Problem:", problem);
   console.log("isProblemLoading:", isProblemLoading);
-
+  console.log("Submissions passed to SubmissionsList:", submissions);
   const renderTabContent = () => {
     switch (activeTab) {
       case "description":
@@ -162,6 +165,7 @@ const ProblemPage = () => {
         );
       case "submissions":
         return (
+          
           <SubmissionsList
             submissions={submissions}
             isLoading={isSubmissionsLoading}
@@ -321,7 +325,7 @@ const ProblemPage = () => {
                     onChange={(value) => setCode(value || "")}
                     options={{
                       minimap: { enabled: false },
-                      fontSize: 20,
+                      fontSize: 16.5 ,
                       lineNumbers: "on",
                       roundedSelection: false,
                       scrollBeyondLastLine: false,

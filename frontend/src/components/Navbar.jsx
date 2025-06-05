@@ -3,7 +3,7 @@ import{User, Code ,LogOut} from "lucide-react"
 import { useAuthStore } from '../store/useAuthStore'
 import { Link } from 'react-router-dom'
 import LogoutButton from "./LogoutButtton";
-import leetlabLogo from "../assets/leetlab.svg";
+import leetlabLogo from "../assets/flask.svg";
 
 const Navbar = () => {
   const { authUser } = useAuthStore();
@@ -16,8 +16,11 @@ const Navbar = () => {
             src={leetlabLogo}
             className="h-18 w-18 bg-primary/20 text-primary border-none px-2 py-2 rounded-full"
           />
-          <span className="text-lg md:text-2xl font-bold tracking-tight text-white hidden md:block">
-            Leetlab
+          <span className="text-lg md:text-2xl font-bold tracking-tight text-blue-200 hidden md:block">
+            Aleet
+          </span>
+          <span className="text-lg md:text-2xl font-bold tracking-tight text-blue-400 hidden md:block">
+            Labs
           </span>
         </Link>
 
