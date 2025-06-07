@@ -31,6 +31,11 @@ export const pollBatchResults = async (tokens) => {
          params: {
            tokens: tokens.join(","),
            base64_encoded: false,
+           headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            Authorization:` Bearer ${process.env.JUDGE0_API_KEY}`, // move key to .env
+          },
          },
        }
      );
