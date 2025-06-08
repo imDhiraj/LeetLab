@@ -4,6 +4,7 @@ function getLanguageName(languageId) {
     63: "JavaScript",
     71: "Python",
     62: "Java",
+    52: "C++ (g++ 7.2.0)",
   };
   return LANGUAGE_NAMES[languageId] || "Unknown";
 }
@@ -16,6 +17,8 @@ export function getLanguageId(language) {
     JAVASCRIPT: 63,
     JAVA: 62,
     TypeScript: 74,
+    "C++ (G++ 7.2.0)": 52,
+    "C++": 52,
   };
   return languageMap[language.toUpperCase()];
 }

@@ -1,0 +1,9 @@
+<svg width="48" height="48" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Flask Body -->
+  <path d="M24 8v20L12 52h40L40 28V8H24Z" fill="#60A5FA" stroke="#3B82F6" stroke-width="2" stroke-linejoin="round"></path>
+  
+  <!-- Liquid Bubbles -->
+  <circle cx="32" cy="12" r="2" fill="#93C5FD"></circle>
+  <circle cx="26" cy="10" r="1.5" fill="#93C5FD"></circle>
+  <circle cx="36" cy="8" r="1.5" fill="#93C5FD"></circle>
+</svg>

@@ -23,7 +23,7 @@ import { useExecutionStore } from "../store/useExecutionStore";
 import { getLanguageId } from "../lib/lang";
 import SubmissionResults from "../components/Submission";
 import { useSubmissionStore } from "../store/useSubmissionStore";
-import  SubmissionsList  from "../components/SubmissionList";
+import SubmissionsList from "../components/SubmissionList";
 
 const ProblemPage = () => {
   const { id } = useParams();
@@ -35,19 +35,20 @@ const ProblemPage = () => {
     getSubmissionCountForProblem,
     submissionCount,
   } = useSubmissionStore();
- 
+
   const [code, setCode] = useState("");
   const [activeTab, setActiveTab] = useState("description");
   const [selectedLanguage, setSelectedLanguage] = useState("javascript");
   const [isBookMarked, setIsBookMarked] = useState(false);
   const [testCases, setTestCases] = useState([]);
 
-  const { executeCode, submission, isExecuting } = useExecutionStore();
+  const { executeCode, submission, isExecuting, clearSubmission } =
+    useExecutionStore();
 
   const handleRunCode = (e) => {
     e.preventDefault();
     try {
-      console.log("submit")
+      console.log("submit");
       const language_id = getLanguageId(selectedLanguage);
       const stdin = problem.testcases.map((tc) => tc.input);
       const expected_outputs = problem.testcases.map((tc) => tc.output);
@@ -60,6 +61,10 @@ const ProblemPage = () => {
   useEffect(() => {
     getProblemById(id);
     getSubmissionCountForProblem(id);
+    // Clear any previous submission results when loading a new problem
+    if (clearSubmission) {
+      clearSubmission();
+    }
   }, [id]);
 
   useEffect(() => {
@@ -68,25 +73,56 @@ const ProblemPage = () => {
     }
   }, [activeTab, id]);
 
+  // Fixed: Separate useEffect for initializing language and code when problem loads
   useEffect(() => {
-    if (problem) {
-      setCode(
-        problem.codeSnippets?.[selectedLanguage] || submission?.sourceCode || ""
-      );
+    if (problem && problem.codeSnippets) {
+      // Set default language if available languages changed
+      const availableLanguages = Object.keys(problem.codeSnippets);
+      if (
+        availableLanguages.length > 0 &&
+        !availableLanguages.includes(selectedLanguage)
+      ) {
+        setSelectedLanguage(availableLanguages[0]);
+      }
+    }
+  }, [problem]);
+
+  // Separate useEffect for test cases to ensure they refresh properly
+  useEffect(() => {
+    if (problem && problem.testcases) {
       setTestCases(
-        problem.testcases?.map((tc) => ({
+        problem.testcases.map((tc) => ({
           input: tc.input,
           output: tc.output,
-        })) || []
+        }))
       );
+    } else {
+      setTestCases([]);
+    }
+  }, [problem]);
+
+  // Fixed: Separate useEffect for handling code changes when language changes
+  useEffect(() => {
+    if (problem && problem.codeSnippets) {
+      const templateCode = problem.codeSnippets[selectedLanguage];
+      if (templateCode) {
+        setCode(templateCode);
+      } else {
+        // Fallback to first available language template
+        const availableLanguages = Object.keys(problem.codeSnippets);
+        if (availableLanguages.length > 0) {
+          setCode(problem.codeSnippets[availableLanguages[0]] || "");
+        }
+      }
     }
   }, [problem, selectedLanguage]);
 
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
     setSelectedLanguage(lang);
-    setCode(problem.codeSnippets?.[lang] || "");
+    // Code will be updated by the useEffect above
   };
+
   console.log("Problem:", problem);
   console.log("isProblemLoading:", isProblemLoading);
 
@@ -100,9 +136,11 @@ const ProblemPage = () => {
       </div>
     );
   }
+
   console.log("Problem:", problem);
   console.log("isProblemLoading:", isProblemLoading);
   console.log("Submissions passed to SubmissionsList:", submissions);
+
   const renderTabContent = () => {
     switch (activeTab) {
       case "description":
@@ -165,7 +203,6 @@ const ProblemPage = () => {
         );
       case "submissions":
         return (
-          
           <SubmissionsList
             submissions={submissions}
             isLoading={isSubmissionsLoading}
@@ -325,7 +362,7 @@ const ProblemPage = () => {
                     onChange={(value) => setCode(value || "")}
                     options={{
                       minimap: { enabled: false },
-                      fontSize: 16.5 ,
+                      fontSize: 16.5,
                       lineNumbers: "on",
                       roundedSelection: false,
                       scrollBeyondLastLine: false,
@@ -365,25 +402,38 @@ const ProblemPage = () => {
                   <>
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-xl font-bold">Test Cases</h3>
+                      <span className="text-sm text-base-content/70">
+                        {testCases.length} test case
+                        {testCases.length !== 1 ? "s" : ""}
+                      </span>
                     </div>
-                    <div className="overflow-x-auto">
-                      <table className="table table-zebra w-full">
-                        <thead>
-                          <tr>
-                            <th>Input</th>
-                            <th>Expected Output</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {testCases.map((testCase, index) => (
-                            <tr key={index}>
-                              <td className="font-mono">{testCase.input}</td>
-                              <td className="font-mono">{testCase.output}</td>
+                    {testCases.length > 0 ? (
+                      <div className="overflow-x-auto">
+                        <table className="table table-zebra w-full">
+                          <thead>
+                            <tr>
+                              <th>Input</th>
+                              <th>Expected Output</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
+                          </thead>
+                          <tbody>
+                            {testCases.map((testCase, index) => (
+                              <tr key={index}>
+                                <td className="font-mono">{testCase.input}</td>
+                                <td className="font-mono">{testCase.output}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center h-full text-base-content/70">
+                        <div className="text-center">
+                          <FileText className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                          <p>No test cases available</p>
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

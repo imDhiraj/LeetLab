@@ -1,59 +1,60 @@
-import React ,{useMemo, useState}from 'react'
+import React, { useMemo, useState } from "react";
 import { useAuthStore } from "../store/useAuthStore";
-import {Link } from 'react-router-dom';
-import { Bookmark , PencilIcon,Trash , TrashIcon , Plus } from 'lucide-react';
+import { Link } from "react-router-dom";
+import { Bookmark, PencilIcon, Trash, TrashIcon, Plus } from "lucide-react";
 
-const ProblemTable = ({problems}) => { 
-    const {authUser}= useAuthStore()
+const ProblemTable = ({ problems }) => {
+  const { authUser } = useAuthStore();
 
-    const [search , setSearch]=useState("")
-    const [difficulty, setDifficulty] = useState("ALL");
-    const [selectedTag, setSelectedTag] = useState("ALL");
-    const [currentPage, setCurrentPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [difficulty, setDifficulty] = useState("ALL");
+  const [selectedTag, setSelectedTag] = useState("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const allTags = useMemo(() => {
+    if (!Array.isArray(problems)) return [];
 
+    const tagsSet = new Set();
 
-    const allTags = useMemo(()=>{
+    problems.forEach((p) => p.tags?.forEach((t) => tagsSet.add(t)));
 
-        if(!Array.isArray(problems)) return [];
+    return Array.from(tagsSet);
+  }, [problems]);
 
-        const tagsSet = new Set()
+  const filteredProblems = useMemo(() => {
+    return (problems || [])
+      .filter((problem) =>
+        problem.title.toLowerCase().includes(search.toLowerCase())
+      )
+      .filter((problem) =>
+        difficulty === "ALL" ? true : problem.difficulty === difficulty
+      )
+      .filter((problem) =>
+        selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
+      );
+  }, [problems, search, difficulty, selectedTag]);
 
-        problems.forEach((p)=>p.tags?.forEach((t)=>tagsSet.add(t)))
+  const itemsPerPage = 5;
+  const totalPages = Math.ceil(filteredProblems.length / itemsPerPage);
+  const paginatedProblems = useMemo(() => {
+    // Fixed: Added parentheses to fix operator precedence
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = currentPage * itemsPerPage;
+    return filteredProblems.slice(startIndex, endIndex);
+  }, [filteredProblems, currentPage]);
 
-        return Array.from(tagsSet)
+  const difficulties = ["EASY", "MEDIUM", "HARD"];
 
-    })
+  const handleDelete = () => {};
 
+  const handleAddToPlaylist = () => {};
 
-    const filteredProblems = useMemo(()=>{
-      return (problems || [])
-        .filter((problem) =>
-          problem.title.toLowerCase().includes(search.toLowerCase())
-        )
-        .filter((problem) =>
-          difficulty === "ALL" ? true : problem.difficulty === difficulty
-        )
-        .filter((problem) =>
-          selectedTag === "ALL" ? true : problem.tags?.includes(selectedTag)
-        );
-    },[problems,search,difficulty,selectedTag])
-
-    const itemsPerPage = 5
-    const totalPages = Math.ceil(filteredProblems.length/itemsPerPage)
-    const paginatedProblems = useMemo(()=>{
-      return filteredProblems.slice(currentPage-1*itemsPerPage,currentPage*itemsPerPage)
-
-
-    },[filteredProblems,currentPage])
-
-
-    const difficulties = ["EASY", "MEDIUM", "HARD"]
-
-    const handleDelete = ()=>{}
-
-    const handleAddToPlaylist =()=>{}
-
+ 
+  const demoProblemIds = [
+    "cmbmeclhl0002pt010sq9i7gg",
+    "cmbmm3mzr000gqn010qmzwk8a",
+    "cmbmmwkpn000kqn01eedyt577",
+  ];
   return (
     <div className="w-full max-w-6xl mx-auto mt-10">
       {/* Header with Create Playlist Button */}
@@ -109,6 +110,7 @@ const ProblemTable = ({problems}) => {
               <th>Solved</th>
               <th>Title</th>
               <th>Tags</th>
+              <th>Company</th>
               <th>Difficulty</th>
               <th>Actions</th>
             </tr>
@@ -130,12 +132,19 @@ const ProblemTable = ({problems}) => {
                       />
                     </td>
                     <td>
-                      <Link
-                        to={`/problem/${problem.id}`}
-                        className="font-semibold hover:underline"
-                      >
-                        {problem.title}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/problem/${problem.id}`}
+                          className="font-semibold hover:underline"
+                        >
+                          {problem.title}
+                        </Link>
+                        {demoProblemIds.includes(problem.id) && (
+                          <span className="badge badge-info badge-sm text-xs">
+                            demo
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td>
                       <div className="flex flex-wrap gap-1">
@@ -145,6 +154,18 @@ const ProblemTable = ({problems}) => {
                             className="badge badge-outline badge-warning text-xs font-bold"
                           >
                             {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td>
+                      <div className="flex flex-wrap gap-1">
+                        {(problem.companys || []).map((company, idx) => (
+                          <span
+                            key={idx}
+                            className="badge badge-outline badge-primary text-xs font-bold"
+                          >
+                            {company}
                           </span>
                         ))}
                       </div>
@@ -179,7 +200,7 @@ const ProblemTable = ({problems}) => {
                         )}
                         <button
                           className="btn btn-sm btn-outline flex gap-2 items-center"
-                           onClick={() => handleAddToPlaylist(problem.id)}
+                          onClick={() => handleAddToPlaylist(problem.id)}
                         >
                           <Bookmark className="w-4 h-4" />
                           <span className="hidden sm:inline">
@@ -197,35 +218,33 @@ const ProblemTable = ({problems}) => {
                   No problems found.
                 </td>
               </tr>
-            )
-            }
+            )}
           </tbody>
         </table>
       </div>
       {/* pagenation */}
-      <div className='flex justify-center mt-6 gap-2'>
-        <button className='btn btn-sm'
-        disabled={currentPage===1}
-        onClick={()=>setCurrentPage((prev)=>prev-1)}>
-          Prev 
-          </button>
-            <span className='btn btn-ghost btn-sm'>
-              {currentPage}/{totalPages}
+      <div className="flex justify-center mt-6 gap-2">
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage((prev) => prev - 1)}
+        >
+          Prev
+        </button>
+        <span className="btn btn-ghost btn-sm">
+          {currentPage}/{totalPages}
+        </span>
 
-            </span>
-
-            <button className='btn btn-sm'
-        disabled={currentPage===totalPages}
-        onClick={()=>setCurrentPage((prev)=>prev+1)}>
-          Next 
-          </button>
-
-            
-         
-
+        <button
+          className="btn btn-sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage((prev) => prev + 1)}
+        >
+          Next
+        </button>
       </div>
     </div>
   );
-}
+};
 
-export default ProblemTable
+export default ProblemTable;

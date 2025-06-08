@@ -10,11 +10,12 @@ export const createProblem = async(req,res)=>{
       description,
       difficulty,
       tags,
+      companys,
       example,
       constraints,
       testcases,
       codeSnippets,
-      referenceSoloution
+      referenceSoloution,
     } = req.body;
 
     if (req.user.role !== "ADMIN") {
@@ -59,12 +60,13 @@ export const createProblem = async(req,res)=>{
             description,
             difficulty,
             tags,
+            companys,
             example,
             constraints,
             testcases,
             codeSnippets,
             referenceSoloution,
-            userId:req.user.id
+            userId: req.user.id,
           },
         });
         return res.status(200).json({
@@ -160,6 +162,7 @@ export const updateProblemById = async (req, res) => {
     description,
     difficulty,
     tags,
+    companys,
     example,
     constraints,
     testcases,
@@ -204,20 +207,20 @@ export const updateProblemById = async (req, res) => {
         }
         console.log("this the id of problem", id);
         const updatedProblem = await db.problem.update({
-          where:{id},
-           
-            data: {
-              title,
-              description,
-              difficulty,
-              tags,
-              example,
-              constraints,
-              testcases,
-              codeSnippets,
-              referenceSoloution,
-              userId: req.user.id,
-            
+          where: { id },
+
+          data: {
+            title,
+            description,
+            difficulty,
+            tags,
+            companys,
+            example,
+            constraints,
+            testcases,
+            codeSnippets,
+            referenceSoloution,
+            userId: req.user.id,
           },
         });
 

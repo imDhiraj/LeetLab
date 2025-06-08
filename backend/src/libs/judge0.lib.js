@@ -5,6 +5,10 @@ export const getJudge0LanguageId = (language) => {
     PYTHON: 72,
     JAVA: 62,
     JAVASCRIPT: 63,
+    TYPESCRIPT: 74,
+    "C++ (GCC 7.4.0)": 52,
+    "C++": 52,
+    CPP: 52,
   };
   return languageMap[language.toUpperCase()];
 };
@@ -70,6 +74,9 @@ export function getLanguageName (LanguageId){
     63: "JavaScript",
     71: "Python",
     62: "Java",
+    52: "C++",
+    52:"C++ (G++ 7.2.0)"
+
   }
 
   return LANGUAGE_NAMES[LanguageId] || "Unknown"
