@@ -6,9 +6,8 @@ export const getJudge0LanguageId = (language) => {
     JAVA: 62,
     JAVASCRIPT: 63,
     TYPESCRIPT: 74,
-    "C++ (GCC 7.4.0)": 52,
-    "C++": 52,
-    CPP: 52,
+    "C++": 54,
+    CPP: 54,
   };
   return languageMap[language.toUpperCase()];
 };
