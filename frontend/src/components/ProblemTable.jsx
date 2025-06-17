@@ -51,7 +51,6 @@ const ProblemTable = ({ problems }) => {
 
  
   const demoProblemIds = [
-    "cmbmeclhl0002pt010sq9i7gg",
     "cmbmm3mzr000gqn010qmzwk8a",
     "cmbmmwkpn000kqn01eedyt577",
   ];
