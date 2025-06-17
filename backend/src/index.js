@@ -27,8 +27,11 @@ app.use(
       "https://www.aleetlabs.co.in/",
       "https://www.aleetlabs.co.in",
 
-      "https://leet-9q5pftmjm-imdhirajs-projects.vercel.app",
-      "https://leet-lab-eight.vercel.app",
+      "https://leet-lab-imdhirajs-projects.vercel.app/login" ,
+      "https://leet-lab-git-main-imdhirajs-projects.vercel.app/login",
+      "https://leet-lab-one.vercel.app/login",
+      
+      
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
