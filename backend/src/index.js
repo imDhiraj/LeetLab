@@ -27,9 +27,9 @@ app.use(
       "https://www.aleetlabs.co.in/",
       "https://www.aleetlabs.co.in",
 
-      "https://leet-lab-imdhirajs-projects.vercel.app/login" ,
-      "https://leet-lab-git-main-imdhirajs-projects.vercel.app/login",
-      "https://leet-lab-one.vercel.app/login",
+      "https://leet-lab-imdhirajs-projects.vercel.app" ,
+      "https://leet-lab-git-main-imdhirajs-projects.vercel.app",
+      "https://leet-lab-one.vercel.app",
       
       
     ],
